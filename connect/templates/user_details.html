@@ -1,0 +1,669 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+
+{% block body %}
+<style>
+  .thumbnail {
+    padding:0px;
+}
+.panel {
+	position:relative;
+}
+.panel>.panel-heading:after,.panel>.panel-heading:before{
+	position:absolute;
+	top:11px;left:-16px;
+	right:100%;
+	width:0;
+	height:0;
+	display:block;
+	content:" ";
+	border-color:transparent;
+	border-style:solid solid outset;
+	pointer-events:none;
+}
+.panel>.panel-heading:after{
+	border-width:7px;
+	border-right-color:#f7f7f7;
+	margin-top:1px;
+	margin-left:2px;
+}
+.panel>.panel-heading:before{
+	border-right-color:#ddd;
+	border-width:8px;
+}
+</style>
+  <!-- Content -->
+  <div id="content"> 
+    
+    <!-- Papular Companies -->
+    <section class="padding-bottom-100">
+      <div class="compny-profile user-profile"> 
+        <!-- SUB Banner -->
+        <div class="profile-bnr">
+          <div class="container"> 
+            
+            <!-- User Iinfo -->
+           <div class="user-info">
+              <div class="">
+                <div class="user-in">
+                  <div class="pro-avatar"> <img src="{{ profile.image.url }}" height="200" alt="" class="img-responsive" > </div>
+                  <h1>{{ profile.name }}
+                    {% if request.user.username == profile.usr.username %}
+                        {% if not is_there_company %}
+                          <a href="{% url 'company' %}" title="Add Company"><i class="fa fa-plus-circle" ></i></a>
+                        {% endif %}
+                    {% endif %}
+                    <a class="veri" href="#." data-toggle="tooltip" data-placement="top" title="Verified Member"> <i class="fa fa-check"></i> </a> </h1>
+
+                  <h6>{{profile.profile_title}}</h6>
+                  <div class="social-links">
+                    <a href="{{profile.facebook}}"><i class="fab fa-facebook-f"></i>
+                    </a> <a href="{{profile.tweeter}}"><i class="fab fa-twitter"></i>
+                  </a> <a href="professional-details.html#."><i class="fab fa-google"></i></a>
+                    <a href="professional-details.html#."><i class="fab fa-linkedin-in"></i></a>
+                    <a href="professional-details.html#."><i class="far fa-bookmark"></i> </a>
+                    <a href="professional-details.html#."><i class="far fa-envelope"></i></a>
+                      {% if request.user.username != profile.usr.username %}
+                          {% if connections %}
+                            <a href="{% url 'connections' 'send_request' profile.id %}" class="float-right margin-right-0" data-toggle="tooltip" data-placement="top" title="Request Pending" style="color:red";><i class="fa fa-exclamation" aria-hidden="true"></i></a>
+                          {% else %}
+                            <a href="{% url 'connections' 'send_request' profile.id %}" class="float-right margin-right-0" data-toggle="tooltip" data-placement="top" title="Send Request"><i class="fa fa-paper-plane" aria-hidden="true"></i></a>
+                          {% endif %}
+                     {% endif %}
+                  </div>
+                  
+                  <!-- Followers -->
+                  <div class="followr">
+                    <ul class="row">
+                      <li class="col-sm-6">
+                        <p>Followers <span>(512)</span></p>
+                      </li>
+                      <li class="col-sm-6">
+                        <p>Following <span>(100)</span></p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Modal POPUP -->
+          <div class="modal fade" id="myModal1" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <h6><a class="close" href="professional-details.html#." data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></a> Send Message</h6>
+                <!-- Forms -->
+                <form action="#" method="post" enctype="multipart/form-data">{% csrf_token %}
+                  <ul class="row">
+                    <li class="col-md-6">
+                      <label style="color:white;">Enter Title * </label>
+                      {{comment_form.title}}
+
+                    </li>
+                    <li class="col-md-6">
+                     <label style="color:white;">Content * </label>
+                      {{comment_form.content}}
+                    </li>
+                    <li class="col-md-6" style="color:white;">
+                      <label>Enter Vide Embaded Code * </label>
+                      {{comment_form.youtube_embad}}
+                    </li>
+                    <li class="col-md-6" style="color:white;">
+                     <label>Enter Image * </label>
+                      {{comment_form.image}}
+                    </li>
+
+                    <li class="col-md-12 text-center">
+                      <button type="submit" class="btn">Send message</button>
+                    </li>
+                  </ul>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Profile Company Content -->
+        <div class="profile-company-content main-user">
+          <div class="container"> 
+            
+            <!-- Nav Tabs -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li><a class="nav-link active" data-toggle="tab" href="#about" role="tab" aria-selected="true">About</a> </li>
+              <li><a class="nav-link" data-toggle="tab" href="#services" role="tab" aria-selected="true">Services</a> </li>
+              <li><a class="nav-link" data-toggle="tab" href="#portfolio" role="tab" aria-selected="true">Portfolio</a> </li>
+              <li><a class="nav-link" data-toggle="tab" href="#contact" role="tab" aria-selected="true">Contact</a> </li>
+              <li><a class="nav-link" data-toggle="tab" href="#support" role="tab" aria-selected="true">Support</a> </li>
+              <li><a class="nav-link" data-toggle="tab" href="#folow" role="tab" aria-selected="true">Followers<small>({{total_follower}})</small></a> </li>
+
+            </ul>
+            <div class="row"> 
+              <!-- SIDE BAR -->
+              <div class="col-lg-4"> 
+                
+                <!-- Company Information -->
+                <div class="sidebar"> 
+                  
+                  <!-- Heading for mobile Collapse -->
+                  <h5 class="main-title margin-bottom-30">User Information
+                    {% if same_user_or_not %}
+                    <a href="{% url 'editUserDetails' request.user.username %}">Edit</a>
+                    {% endif %}
+                  </h5>
+                  <div class="navbar-expand-lg"> 
+                    <!-- Heading for mobile Collapse --> 
+                    <a class="collapsed main-title fr-mob" data-toggle="collapse" data-target="#cmpny-info" aria-expanded="false"> User Information </a>
+                    <div class="collapse navbar-collapse" id="cmpny-info">
+                      <div class="side-bar-indide"> 
+                        
+                        <!-- Company Information -->
+                        <div class="sidebar-information">
+                          <ul class="single-category">
+                            <li>
+                              <h6 class="title">Name</h6>
+                              <span class="subtitle">{{profile.name}}</span> </li>
+                            <li>
+                              <h6 class="title">Age</h6>
+                              <span class="subtitle">22 Years</span> </li>
+                            <li>
+                              <h6 class="title">Location</h6>
+                              <span class="subtitle">{{profile.location}}</span> </li>
+                            <li>
+                              <h6 class="title">Experiance</h6>
+                              <span class="subtitle">{{profile.experience}}</span> </li>
+                            <li>
+                              <h6 class="title">Degree</h6>
+                              <span class="subtitle">{{profile.degree}}</span> </li>
+                            <li>
+                              <h6 class="title">Phone</h6>
+                              <span class="subtitle">{{profile.number}}</span> </li>
+                            <li>
+                              <h6 class="title">Email</h6>
+                              <div class="subtitle"><a href="{{profile.email}}">{{profile.email}}</a> </div>
+                            </li>
+                            <li>
+                              <h6 class="title">Website</h6>
+                              <div class="subtitle"> <a href="{{profile.website}}" target="_blank">{{profile.website}}</a> </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Company Rating -->
+                <div class="sidebar">
+                  <h5 class="main-title margin-bottom-20">Rating <a href="" style="color:red;">Rate me please</a></h5>
+                  <div class="navbar-expand-lg"> 
+                    <!-- Heading for mobile Collapse --> 
+                    <a class="collapsed main-title fr-mob" data-toggle="collapse" data-target="#cmpny-rtng" aria-expanded="false"> Rating </a>
+                    <div class="collapse navbar-collapse" id="cmpny-rtng">
+                      <div class="side-bar-indide">
+                        <div class="sidebar-information">
+                          <ul class="single-category com-rate">
+                            <li>
+                              <h6 class="title">Expertise:</h6>
+                              <span class="subtitle"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fas fa-star-half-alt"></i> </span> </li>
+                            <li>
+                              <h6 class="title">Knowledge:</h6>
+                              <span class="subtitle"><i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i> <i class="far fa-star"></i> </span> </li>
+                            <li>
+                              <h6 class="title">Quality:</h6>
+                              <span class="subtitle"><i class="fas fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fas fa-star-half-alt"></i> </span> </li>
+                            <li>
+                              <h6 class="title">Price:</h6>
+                              <span class="subtitle"><i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i> </span> </li>
+                            <li>
+                              <h6 class="title">Services:</h6>
+                              <span class="subtitle"><i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> </span> </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Tab Content -->
+              <div class="col-lg-8">
+                <div class="tab-content"> 
+                  
+                  <!-- About Company -->
+                 {% for post in blogs_data %}
+                  <div id="about" class="tab-pane fade show active" style="height: 800px; overflow-y: scroll;">
+                    <div class="profile-main">
+                      <h3>{{post.title}} </h3>
+
+                      <div class="profile-in">
+                       <p>{{post.blogs}}</p>
+                        <!-- Video -->
+                        {{post.youtube_embad | safe}}
+
+                        <p><center><h6>Published : {{post.date}}</h6></center></p>
+                        {% if post.id in liked_by_me_ids %}
+                        <i class="fa fa-thumbs-up" aria-hidden="true" title="liked" style="color:red;"> {{post.like_blogs_set.all.count}}</i>
+                        {% else %}
+                          <a href="{% url 'likes' post.id profile.usr.username %}"><i class="fa fa-thumbs-up" aria-hidden="true" title="Like"></i></a> {{post.like_blogs_set.all.count}}
+                        {% endif %}
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" style="margin-left:50px;">Comment</button>
+
+                        <hr>
+                        <center><p><a href="{% url 'see_comments' post.id profile.usr.username %}" style="color:red;">Comments</a> ({{post.comment_blogs_set.all.count}})</p></center>
+                         <hr>
+
+
+                         {% for comments in comments_data %}
+                            {% if comments.blog.id == post.id %}
+
+                        <div class="col-sm-1">
+                          <div class="thumbnail">
+                            <img class="img-responsive user-photo" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png">
+                          </div><!-- /thumbnail -->
+                        </div><!-- /col-sm-1 -->
+
+                        <div class="col-sm-7">
+                          <div class="panel panel-default">
+                            <div class="panel-heading">
+                              <strong><a href="{% url 'userProfile' comments.usr.username %}">{{comments.usr.username}}</a></strong> <span class="text-muted">commented 5 days ago</span>
+                            </div>
+                            <div class="panel-body">
+                              <p><b>Title : {{comments.title}}</b></p>
+                              <p>Contents : {{comments.content}}</p>
+                              {% if comments.youtube_embad %}
+                              <p>{{comments.youtube_embad | safe}}</p>
+                              {% endif %}
+                            </div><!-- /panel-body -->
+                          </div><!-- /panel panel-default -->
+                        </div><!-- /col-sm-5 -->
+                           {% endif %}
+                        {% endfor %}
+
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <h6><a class="close" href="professional-details.html#." data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></a> Send Message</h6>
+                <!-- Forms -->
+                <form action="{% url 'comments' post.id profile.usr.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                  <ul class="row">
+                    <li class="col-md-6">
+                      <label style="color:white;">Enter Title * </label>
+                      {{comment_form.title}}
+
+                    </li>
+
+                     <li class="col-md-6" style="color:white;">
+                     <label>Enter Image * </label>
+                      {{comment_form.image}}
+                    </li>
+
+                    <li class="col-md-6">
+                     <label style="color:white;">Content * </label>
+                      {{comment_form.content}}
+                    </li>
+                    <li class="col-md-6" style="color:white;">
+                      <label>Enter Vide Embaded Code * </label>
+                      {{comment_form.youtube_embad}}
+                    </li>
+
+
+                    <li class="col-md-12 text-center">
+                      <button type="submit" class="btn">Post Comment</button>
+                    </li>
+                  </ul>
+                </form>
+              </div>
+            </div>
+          </div>
+
+
+
+
+      </div>
+                </div>
+                  </div>
+                  {% endfor %}
+
+
+
+                  <div id="services" class="tab-pane fade">
+                    <div class="profile-main">
+                      <h3>Services</h3>
+                      <div class="profile-in">
+                        <div class="row"> 
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="far fa-gem"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Web Design</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="fas fa-anchor"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Motion Graphic</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="fab fa-viacoin"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Branding Design</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="fa fa-trophy"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Google Sell</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="fa fa-anchor"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Motion Graphic</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                          
+                          <!-- Icon -->
+                          <div class="col-md-6">
+                            <div class="icon-box ib-style-5 ib-center ib-text-alt ib-bordered ib-bordered-white ib-bordered-thin ib-medium ib-circle">
+                              <div class="ib-icon"> <i class="far fa-gem"></i> </div>
+                              <div class="ib-info">
+                                <h4 class="h6">Branding Design</h4>
+                                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, </p>
+                                <a href="professional-details.html#">Contact Now </a> </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- PORTFOLIO -->
+                  <div id="portfolio" class="tab-pane fade">
+                    <div class="profile-main">
+                      <h3>Portfolio</h3>
+                      <div class="profile-in portfolio"> 
+                        
+                        <!-- PORTFOLIO ITEMS -->
+                        <div class="items item-space row animate fadeInUp" data-wow-delay="0.4s"> 
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-web-design">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-1.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-photography pf-branding-design">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-2.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-web-design pf-branding-design">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-3.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-web-design pf-digital-art ">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-4.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-branding-design pf-digital-art">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-5.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-design pf-digital-art">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-9.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-web-design pf-branding-design">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-7.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                          
+                          <!-- ITEM -->
+                          <article class="portfolio-item pf-web-design pf-digital-art ">
+                            <div class="portfolio-image"> <a href="professional-details.html#."> <img class="img-responsive" alt="Open Imagination" src="{% static 'images/img-8.jpg' %}"> </a>
+                              <div class="portfolio-overlay style-4">
+                                <div class="detail-info">
+                                  <div class="position-center-center">
+                                    <h3 class="no-margin">Assembly Branding</h3>
+                                    <hr class="balck">
+                                    <span><a href="professional-details.html#.">Fashion / trending</a></span> <a href="professional-details.html#." class="go"><i class="fa fa-search"></i></a> <a href="professional-details.html#." class="go"><i class="fa fa-link"></i></a> </div>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Jobs --> 
+                  
+                  <!-- Contact -->
+                  <div id="contact" class="tab-pane fade">
+                    <div class="profile-main">
+                      <h3>Contact the {{profile.name}}</h3>
+                      <div class="profile-in">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate quis tenetur velit! Provident eum molestias aperiam suscipit distinctio ipsum cupiditate quasi, dolor sunt, cum reprehenderit quibusdam, repellendus eaque, quas magni.</p>
+                        <form action="#" class="contact-company">
+                          <ul class="row">
+                            <li class="col-sm-6">
+                              <input type="text" placeholder="Full Name " class="form-control">
+                            </li>
+                            <li class="col-sm-6">
+                              <input type="text" placeholder="E-mail address" class="form-control">
+                            </li>
+                            <li class="col-sm-6">
+                              <input type="text" placeholder="Phone Number" class="form-control">
+                            </li>
+                            <li class="col-sm-6">
+                              <input type="text" placeholder="Subject" class="form-control">
+                            </li>
+                            <li class="col-sm-12">
+                              <textarea placeholder="Your Message" class="form-control"></textarea>
+                            </li>
+                          </ul>
+                          <button class="btn">Send message</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Support -->
+                  <div id="support" class="tab-pane fade">
+                    <div class="profile-main">
+                      <h3>Support</h3>
+                      <div class="profile-in"> </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Follows -->
+                  <div id="folow" class="tab-pane fade">
+                    <div class="profile-main">
+                      <h3>Followers({{total_follower}})</h3>
+                      <div class="profile-in"> 
+                        
+                        <!-- Follows -->
+                        <div class="followers-sec">
+                          <ul>
+                            <!-- Follows -->
+                            {% for follower in follower %}
+                            <li>
+                              <div class="inside">
+                                <div class="thumb"> <img src="{{follower.image.url}}" alt="" class="img-responsive"> </div>
+                                <h4>{{follower.profile_title}}</h4>
+                                <p> <span>Email : </span> {{follower.email}}</p>
+                                <a href="{% url 'userProfile' follower.usr.username %}" class="btn btn-inverse"> See Profile</a> </div>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- WHAT OUR USERS SAY -->
+    <section class="bg-white padding-top-100 padding-bottom-100">
+      <div class="container"> 
+        
+        <!-- Heading Block -->
+        <div class="heading-block text-center">
+          <h2>Review About MR. Ceaser</h2>
+        </div>
+        
+        <!-- Testimonial Style 4 -->
+        <div class="testimonial style-4">
+          <div class="testi"> 
+            <!-- Testi Slides With Image -->
+            <div class="testi-slide"> 
+              
+              <!-- Slides -->
+              <div> 
+                <!-- Avatar -->
+                <div class="avatar"><img class="img-circle img-responsive" src="{% static 'images/testimonial-2a.png' %}" alt=" "></div>
+                <div class="text-in">
+                  <p>“There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, 
+                    or randomised words which don't look even slightly believable.” </p>
+                  <h6>WHITE SHADOW WALKER</h6>
+                  <span> CEO/FOUNDER DELL</span> 
+                  <!-- Stars -->
+                  <div class="rating-stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star-o"></i></div>
+                </div>
+              </div>
+              
+              <!-- Slides -->
+              <div> 
+                <!-- Avatar -->
+                <div class="avatar"><img class="img-circle img-responsive" src="{% static 'images/testimonial-2b.png' %}" alt=" "></div>
+                <div class="text-in">
+                  <p>“There are many variations  but the majority have suffered alteration. but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.”</p>
+                  <h6>M_ADNAN</h6>
+                  <span> CEO/FOUNDER DELL</span> 
+                  <!-- Stars -->
+                  <div class="rating-stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star-o"></i> <i class="fa fa-star-o"></i></div>
+                </div>
+              </div>
+              
+              <!-- Slides 1 -->
+              <div> 
+                <!-- Avatar -->
+                <div class="avatar"><img class="img-circle img-responsive" src="{% static 'images/testimonial-2c.png' %}" alt=" "></div>
+                <div class="text-in">
+                  <p>“There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, Alteration in some form randomised words which don't look even slightly believable.”</p>
+                  <h6>DAVID WALKER</h6>
+                  <span> CEO/FOUNDER DELL</span> 
+                  <!-- Stars -->
+                  <div class="rating-stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star-o"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+{% endblock %}
+  
