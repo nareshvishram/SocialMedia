@@ -30,15 +30,31 @@
                     <ul class="row">
 
                       <!-- Name -->
+                        {% if error_wrong_user %}
+                         <li class="col-md-12">
+                                 <div class="alert">
+                                   <span class="closebtn">&times;</span>
+                                      <strong>Wrong Username or Password</strong>
+                                  </div>
+                         </li>
+                        {% endif %}
+                        {% if error_username_exist %}
+                         <li class="col-md-12">
+                                 <div class="alert">
+                                   <span class="closebtn">&times;</span>
+                                     <strong>You are already an user</strong>
+                                  </div>
+                         </li>
+                        {% endif %}
                       <li class="col-md-12">
                         <label> Username Or Email Address
-                          <input type="text" name="un" value="" placeholder="" class="form-control">
+                          <input type="text" name="un" value="" placeholder="" class="form-control" required>
                         </label>
                       </li>
                       <!-- LAST NAME -->
                       <li class="col-md-12">
                         <label> Password
-                          <input type="password" name="ps" value="" placeholder="" class="form-control">
+                          <input type="password" name="ps" value="" placeholder="" class="form-control" required>
                         </label>
                       </li>
 
@@ -54,9 +70,9 @@
                           <label for="rembr"> Remember Me </label>
                         </div>
 
-                        <!-- FORGET PASS -->
+                        <!-- FORGET PASS
                       <li class="col-md-4">
-                        <div class="margin-top-15 text-right"> <a href="login-register.html#.">Forget Password</a> </div>
+                        <div class="margin-top-15 text-right"> <a href="#">Forget Password</a> </div>-->
                       </li>
                     </ul>
                   </form>
@@ -65,7 +81,6 @@
                 <!-- Register -->
                 <div class="tab-pane fade" id="reg" role="tabpanel" aria-labelledby="reg-tab">
                   <form action="{% url 'register' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-
                     <center>
                       <p>Profile Picture</p>
                       <p><img id="output" width="200" height="200" style="border-radius:50%;"/></p>
@@ -87,6 +102,7 @@
                       </li>
 
                       <!-- User name -->
+
                       <li class="col-md-6">
                         <label> User Name *
                           <input type="text" name="un" value="" placeholder="" class="form-control">

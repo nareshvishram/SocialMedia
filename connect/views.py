@@ -14,7 +14,7 @@ def Login(request):
 
     if request.user.is_authenticated:
         return redirect("userProfile", request.user.username)
-    error = False
+    error_wrong_user = False
     form = AddUser_Form()
     if request.method == "POST":
         data = request.POST
@@ -27,12 +27,13 @@ def Login(request):
             username = usr.username
             return redirect("userProfile", username)
 
-        error = True
-    dict = {"error": error, "form": form}
+        error_wrong_user = True
+    dict = {"error_wrong_user": error_wrong_user, "form": form}
     return render(request, "login_register.html", dict)
 
 
 def Register(request):
+    error_username_exist=False
     form = AddUser_Form()
     if request.method == "POST":
         form = AddUser_Form(request.POST, request.FILES)
@@ -41,14 +42,17 @@ def Register(request):
             un = request.POST["un"]
             ps = request.POST["ps"]
             email = data.email
+            already_existed=User.objects.filter(username=un)
+            if not already_existed:
+                   usr = User.objects.create_user(un, email, ps)
+                   if usr:
+                       data.usr = usr
+                       data.save()
+                       return redirect("login")
+            error_username_exist = True
 
-            usr = User.objects.create_user(un, email, ps)
-            data.usr = usr
-            data.save()
-            return redirect("login")
-    dict = {"form": form}
+    dict = {"form": form,"error_username_exist":error_username_exist}
     return render(request, "login_register.html", dict)
-
 
 def Logout(request):
     logout(request)
@@ -72,7 +76,7 @@ def UserProfile(request, Username):
         return redirect("userProfile", request.user.username)
 
     '''
-      If there is a user present in our UserDB with this username then 
+      If there is a user present in our UserDB with this username then
       extract that user details and then return that username so that we can see that users profile
     '''
     '''Follow - Request coding start '''
@@ -188,12 +192,14 @@ def Professionals(request, what):
     me = UserDataBase.objects.get(usr=me_usr)
 
     sabhi = Connections.objects.all()
+    all_users_till_now=UserDataBase.objects.all()
     data = ""
-
+    #print("me",me)
+    #print("sabhi log",UserDataBase.objects.all())
     if what == "all":
         data = UserDataBase.objects.all()
 
-    if what == 'request':
+    elif what == 'request':
         connections = Connections.objects.filter(receiver=me, status="send_request")
         User_Data = []
         # print(connections)
@@ -201,7 +207,7 @@ def Professionals(request, what):
             ud = UserDataBase.objects.get(id=i.sender.id)
             User_Data.append(ud)
         data = User_Data
-    if what == "pending":
+    elif what == "pending":
         connections = Connections.objects.filter(sender=me, status="send_request")
         User_Data = []
         for i in connections:
@@ -209,7 +215,7 @@ def Professionals(request, what):
             User_Data.append(ud)
         data = User_Data
 
-    if what == "friends":
+    elif what == "friends":
         connection = Connections.objects.filter(Q(sender=me, status="friend") | Q(receiver=me, status="friend"))
         User_Data = []
         for i in connection:
@@ -232,7 +238,7 @@ def Professionals(request, what):
     con_friend = Connections.objects.filter(Q(sender=me, status="friend") | Q(receiver=me, status="friend"))
 
     dict = {"data": data, "what": what, "con_request": con_request, "con_pending": con_pending,
-            "con_friend": con_friend, "con_all": con_all}
+            "con_friend": con_friend, "con_all": con_all,"all_user_till_now":all_users_till_now}
     return render(request, "professionals.html", dict)
 
 
@@ -333,17 +339,13 @@ def Companies_Detail(request):
 
 
 def Company_Blogs(request):
-    if not request.user.is_authenticated:
-        return redirect("login")
-    form = Blogs_Form()
-    if request.method == "POST":
-        form = Blogs_Form(request.POST, request.FILES)
+    if request.method=="POST":
+        form = Blogs_Form(request.POST)
         if form.is_valid():
             data = form.save(commit=False)
             data.usr = request.user
             data.save()
-            return redirect("companies_detail")
-    return render(request, "companies_detail.html")
+    return redirect("login")
 
 
 def Likes(request, b_id, Username):
@@ -396,3 +398,16 @@ def See_Comments(request,b_id,Username):
     comments_data=Comment_Blogs.objects.filter(blog=blog)
     print("blog",blog)
     return redirect("userProfile",Username)
+
+def Base_Data(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+    user=request.user.username
+    usr=User.objects.filter(username=user)
+    usr=usr[0]
+    data=UserDataBase.objects.get(usr=usr)
+    dict={"data":data}
+    print("data",data)
+    return render(request,"base.html",dict)
+
+

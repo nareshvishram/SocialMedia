@@ -7,10 +7,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="author" content="M_Adnan">
-<title>Social Networking Connecting HTML5 Template</title>
+<title>Social Networking </title>
 
 <!-- Bootstrap Core CSS -->
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<!-- Google Fonts -->
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800" rel="stylesheet">
 
 <!-- Custom CSS -->
 <link href="{% static 'css/main.css' %}" rel="stylesheet">
@@ -33,6 +36,42 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js' %}"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js' %}"></script>
 <![endif]-->
+
+<!-- alert dialogue -->
+  <style>
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+  text-align:center;
+  opacity: 1;
+  font-size:23px;
+  transition: opacity 0.6s;
+  margin-bottom: 15px;
+  font-family: 'Itim', cursive;
+}
+
+.alert.success {background-color: #4CAF50;}
+.alert.info {background-color: #2196F3;}
+.alert.warning {background-color: #ff9800;}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+</style>
+
+  <!-- Alert Dialogue ended -->
 
 </head>
 <body>
@@ -58,8 +97,11 @@
 
             <li class=""> <a href="{% url 'professionals' 'all' %}">Connections</a> </li>
             <li class=""> <a href="{% url 'companies_detail' %}">Companies</a> </li>
-            <li class=""> <a href="">Jobs</a> </li>
-            <li> <a href=""> Contact</a> </li>
+            {% if request.user.is_authenticated %}
+              <li> <a href="{% url 'logout' %}"> logout</a> </li>
+            {% else %}
+              <li> <a href="{% url 'login' %}"> login</a> </li>
+            {% endif %}
           </ul>
         </div>
 
@@ -69,12 +111,27 @@
           <div class="collapse navbar-collapse navbar-expand-lg" id="socialNav" data-parent="#nav-resposive">
             <div class="social_icons">
               <ul>
+                {% if data.whatsapp %}
                 <li><a href="#."><i class="fab fa-whatsapp"></i></a></li>
-                <li><a href="#."><i class="fab fa-facebook-f"></i></a></li>
-                <li><a href="#."><i class="fab fa-twitter"></i></a></li>
-                <li><a href="#."><i class="fab fa-google-plus-g"></i></a></li>
-                <li><a href="#."><i class="fab fa-linkedin-in"></i></a></li>
-                  <li><a href="{% url 'logout' %}"><i class="fa fa-lock-open"></i></a></li>
+                {% endif %}
+
+                {% if data.facebook %}
+                <li><a href="{{data.facebook}}"><i class="fab fa-facebook-f"></i></a></li>
+                {% endif %}
+
+                {% if data.tweeter %}
+                <li><a href="{{data.tweeter}}"><i class="fab fa-twitter"></i></a></li>
+                {% endif %}
+
+                {% if data.website %}
+                <li><a href="{{data.website}}"><i class="fab fa-google-plus-g"></i></a></li>
+                {% endif %}
+
+                {% if data.linkedin %}
+                <li><a href="{{data.linkedin}}"><i class="fab fa-linkedin-in"></i></a></li>
+                {% endif %}
+
+                <li><a href="{% url 'logout' %}"><i class="fa fa-lock-open"></i></a></li>
               </ul>
             </div>
           </div>
@@ -86,11 +143,11 @@
 
 {% block body %}
 
-    {% endblock %}
+{% endblock %}
 
 
 
-
+{% if request.user.is_authenticated %}
   <!-- Footer -->
   <footer id="footer">
     <div class="footer-wrapper">
@@ -106,12 +163,13 @@
                   <h3 class="block-title">Latest Companies</h3>
                   <div class="block-content">
                     <ul>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-1.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-2.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-3.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-4.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-5.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
-                      <li> <a href="#."> <img src="{% static 'images/company-img-6.jpg' %}" alt="" class="img-responsive"> Webicode</a></li>
+                      <li> <a href="{% url 'login' %}"> <img src="{% static 'images/company-img-1.jpg' %}" alt="" class="img-responsive"> Home</a></li>
+                      <li> <a href="{% url 'login' %}"> <img src="{% static 'images/company-img-2.jpg' %}" alt="" class="img-responsive"> Profile</a></li>
+                      <li> <a href="#."> <img src="{% static 'images/company-img-5.jpg' %}" alt="" class="img-responsive"> Contact</a></li>
+                      <li> <a href="{% url 'company' %}"> <img src="{% static 'images/company-img-3.jpg' %}" alt="" class="img-responsive"> Add Company</a></li>
+                      <li> <a href="{% url 'companyBlogs' %}"> <img src="{% static 'images/company-img-4.jpg' %}" alt="" class="img-responsive"> Company Blogs</a></li>
+
+                      <li> <a href="#."> <img src="{% static 'images/company-img-6.jpg' %}" alt="" class="img-responsive"> View Portfolio</a></li>
                     </ul>
                   </div>
                 </div>
@@ -123,18 +181,10 @@
                   <h3 class="block-title"><span>Usefull Links</span></h3>
                   <div class="block-content">
                     <ul>
-                      <li><a href="#.">Theme Features</a></li>
-                      <li><a href="#.">Page Builder</a></li>
-                      <li><a href="#.">Privacy Policy</a></li>
-                      <li><a href="#.">Shop Rules</a></li>
-                      <li><a href="#.">Services</a></li>
-                      <li><a href="#.">Gallery Layout</a></li>
-                      <li><a href="#.">Theme Features</a></li>
-                      <li><a href="#.">Page Builder</a></li>
-                      <li><a href="#.">Privacy Policy</a></li>
-                      <li><a href="#.">Shop Rules</a></li>
-                      <li><a href="#.">Services</a></li>
-                      <li><a href="#.">Gallery Layout</a></li>
+                      <li><a href="{% url 'login' %}">Home</a></li>
+                      <li><a href="">Profile</a></li>
+                      <li><a href="{% url 'companyBlogs' %}">Privacy Policy</a></li>
+                      <li><a href="{% url 'logout' %}">Logout</a></li>
                     </ul>
                   </div>
                 </div>
@@ -142,17 +192,14 @@
 
               <!-- Twitter Widget Block -->
               <div class="col-md-4">
-                <div class="block block-twitter-widget">
+                <div class="block block-twitter-widget" >
                   <h3 class="block-title"><span>Twitter Widget</span></h3>
                   <div class="block-content">
                     <div class="twitter-item">
-                      <div class="twitter-content"> Looking for an awesome CREATIVE WordPress Theme? Esquise was updated and optimized to run even better. Find it here: <a href="https://webicode.com/" target="_blank">https://webicode.com/</a> </div>
-                      <div class="twitter-context"> <i class="fa fa-twitter"></i><span class="twitter-date">01 day ago</span> </div>
+                      <div class="twitter-content">Some infinities are greater than infinities.<a href="https://twitter.com/home" target="_blank">https://twitter.com/home</a> </div>
+                      <div class="twitter-context"> </div>
                     </div>
-                    <div class="twitter-item">
-                      <div class="twitter-content"> It is a long established fact that a reader will be distracted by the readable . Find it here: <a href="https://webicode.com/" target="_blank">https://webicode.com/</a> </div>
-                      <div class="twitter-context"> <i class="fa fa-twitter"></i><span class="twitter-date">02 days ago</span> </div>
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -171,12 +218,27 @@
               </div>
               <div class="col-md-6 social-links">
                 <ul class="right">
-                  <li><a href="#."><i class="fab fa-facebook"></i></a></li>
-                  <li><a href="#."><i class="fab fa-twitter"></i></a></li>
-                  <li><a href="#."><i class="fab fa-dribbble"></i></a></li>
-                  <li><a href="#."><i class="fab fa-behance"></i></a></li>
-                  <li><a href="#."><i class="fab fa-pinterest"></i></a></li>
-                  <li><a href="#."><i class="fab fa-google-plus"></i></a></li>
+                  {% if data.whatsapp %}
+                <li><a href="#."><i class="fab fa-whatsapp"></i></a></li>
+                {% endif %}
+
+                {% if data.facebook %}
+                <li><a href="{{data.facebook}}"><i class="fab fa-facebook-f"></i></a></li>
+                {% endif %}
+
+                {% if data.tweeter %}
+                <li><a href="{{data.tweeter}}"><i class="fab fa-twitter"></i></a></li>
+                {% endif %}
+
+                {% if data.website %}
+                <li><a href="{{data.website}}"><i class="fab fa-google-plus-g"></i></a></li>
+                {% endif %}
+
+                {% if data.linkedin %}
+                <li><a href="{{data.linkedin}}"><i class="fab fa-linkedin-in"></i></a></li>
+                {% endif %}
+
+                <li><a href="{% url 'logout' %}"><i class="fa fa-lock-open"></i></a></li>
                 </ul>
               </div>
             </div>
@@ -186,6 +248,7 @@
       <!-- End Footer Bottom -->
     </div>
   </footer>
+  {% endif %}
   <!-- End Footer -->
 
 </div>
@@ -198,5 +261,20 @@
 <script src="{% static 'js/owl.carousel.min.js' %}"></script>
 <script src="{% static 'js/jquery.mixitup.min.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
+<!-- Alert Dialogue Script started -->
+<script>
+var close = document.getElementsByClassName("closebtn");
+var i;
+
+for (i = 0; i < close.length; i++) {
+  close[i].onclick = function(){
+    var div = this.parentElement;
+    div.style.opacity = "0";
+    setTimeout(function(){ div.style.display = "none"; }, 600);
+  }
+}
+
+<!-- Alert Dialogue Ended -->
+</script>
 </body>
 </html>

@@ -293,6 +293,7 @@ header .navbar li.dropdown a:after {
 .com-inside .img-sec .hover-over {
     opacity: 1;
     display: none;
+
 }
 .com-inside:hover .img-sec .hover-over {
     display: block;
